@@ -20,13 +20,18 @@ module.exports = function(config) {
       'bower_components/angular-mocks/angular-mocks.js',
 
       // our app code
-      'public/angular/client/app/**/*.js',
+      'public/angular/client/challengerApp/*.js',
+      'public/angular/client/challengerApp/**/*.js',
 
       // our spec files
       'node_modules/expect.js/index.js',
       'specs/client/*.js'
 
     ],
+
+    // plugins : [
+    //     'karma-mocha'
+    // ],
 
 
     // list of files to exclude
