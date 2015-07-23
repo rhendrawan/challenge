@@ -154,8 +154,27 @@ router.get('/challenge/:id', function(req, res) {
   var target_id = parseInt(req.params.id);
   // var data = req.db.Challenge.findById(req.params.id);
 
-  models.Challenge.findOne({where: {id: target_id}})
+  models.Challenge.findOne({
+      where: {id: target_id},
+      include: [{
+        model: models.User,
+        as: 'participants'
+      }]
+    })
     .then(function(challenge) {
+      console.log(challenge.get('participants', {plain: true}));
+      var rawParticipants = challenge.get('participants', {plain: true});
+      var participants = [];
+
+      for(var i = 0; i < rawParticipants.length; i++) {
+        participants.push({
+          id: rawParticipants[i].id,
+          first_name: rawParticipants[i].first_name,
+          last_name: rawParticipants[i].last_name,
+          accepted: rawParticipants[i].usersChallenges.accepted
+        });
+      }
+
       res.json({
         id: challenge.get('id'),
         title: challenge.get('title'),
@@ -165,8 +184,10 @@ router.get('/challenge/:id', function(req, res) {
         winner: challenge.get('winner'),
         complete: challenge.get('complete'),
         started: challenge.get('started'),
-        createdAt: challenge.get('createdAt'),
-        updatedAt: challenge.get('updatedAt')
+        date_created: challenge.get('createdAt'),
+        date_started: challenge.get('date_started'),
+        date_completed: challenge.get('date_completed'),
+        participants: participants
       });
     });
 
