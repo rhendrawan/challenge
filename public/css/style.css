@@ -10,6 +10,9 @@
 .challenge-participant-list {
   width: 25%;
 }
+.challenge-participant-list > a {
+  text-decoration: none;
+}
 .challenge-participant-list > a > img {
-  height: 15px;
+  height: 20px;
 }
