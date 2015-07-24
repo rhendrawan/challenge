@@ -28,7 +28,7 @@
         <li><a ui-sref="about">About</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right" ng-show="user">
-        <li><a class="navbar-profile" ui-sref="profile"><img src="{{user.profile_image}}" style="height:50px;"></a></li>
+        <li><a class="navbar-profile" ui-sref="user"><img ng-src="{{user.profile_image}}" style="height:50px;"></a></li>
         <li><a ui-sref="signout">Logout</a>
     </ul>
     <ul class="nav navbar-nav navbar-right" ng-hide="user">
@@ -47,7 +47,7 @@
 <script src="angular/client/challengerApp/completed/completed.js"></script>
 <script src="angular/client/challengerApp/create/create.js"></script>
 <script src="angular/client/challengerApp/services/services.js"></script>
-<script src="angular/client/challengerApp/recent/recent.js"></script>
+<script src="angular/client/challengerApp/user/user.js"></script>
 
 
 </body>

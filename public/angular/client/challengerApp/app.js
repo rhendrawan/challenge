@@ -2,7 +2,7 @@ angular.module('challengeApp', [
   'challengeApp.challenge',
   'challengeApp.createChallenge',
   'challengeApp.completedChallenges',
-  'challengeApp.recentChallenges',
+  'challengeApp.userChallenge',
   'challengeApp.services',
   'ui.router'
 ])
@@ -60,6 +60,12 @@ angular.module('challengeApp', [
         //       controller: "ChallengeController" 
         //   }
         // }
+    })
+
+    .state('user', {
+      url: '/user',
+      templateUrl: 'angular/client/challengerApp/user/index.html',
+      controller: 'UserChallengesController'
     });
 
 }).controller('ChallengeAppController', function($scope, $state, Auth) {
