@@ -6,3 +6,10 @@
 .navbar-nav.navbar-right, .navbar-nav.navbar-right:last-child {
   margin-right: 0;
 }
+
+.challenge-participant-list {
+  width: 25%;
+}
+.challenge-participant-list > a > img {
+  height: 15px;
+}
