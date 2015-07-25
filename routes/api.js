@@ -121,10 +121,31 @@ router.get('/challenge/public', function(req, res) {
 
   // res.json(data);
 
-  models.Challenge.findAll({ limit: 10 , order: [['createdAt', 'DESC']]}) // must pass an array of tuples
+  models.Challenge.findAll({
+      limit: 10,
+      order: [['createdAt', 'DESC']], // must pass an array of tuples
+      include: [{
+        model: models.User,
+        as: 'participants'
+      }]
+    })
     .then(function(challenges) {
+      console.log(challenges);
+
       var data = [];
       for(var i = 0; i < challenges.length; i++) {
+        var rawParticipants = challenges[i].get('participants', {plain: true});
+        var participants = [];
+
+        for(var j = 0; j < rawParticipants.length; j++) {
+          participants.push({
+            id: rawParticipants[i].id,
+            first_name: rawParticipants[i].first_name,
+            last_name: rawParticipants[i].last_name,
+            accepted: rawParticipants[i].usersChallenges.accepted
+          });
+        }
+
         data.push({
           id: challenges[i].get('id'),
           title: challenges[i].get('title'),
@@ -134,8 +155,10 @@ router.get('/challenge/public', function(req, res) {
           winner:  challenges[i].get('winner'),
           complete: challenges[i].get('complete'),
           started: challenges[i].get('started'),
-          createdAt: challenges[i].get('createdAt'),
-          updatedAt: challenges[i].get('updatedAt')
+          date_created: challenges[i].get('createdAt'),
+          date_completed: challenges[i].get('date_completed'),
+          date_started: challenges[i].get('date_started'),
+          participants: participants
         });
       }
 
@@ -162,7 +185,6 @@ router.get('/challenge/:id', function(req, res) {
       }]
     })
     .then(function(challenge) {
-      console.log(challenge.get('participants', {plain: true}));
       var rawParticipants = challenge.get('participants', {plain: true});
       var participants = [];
 
