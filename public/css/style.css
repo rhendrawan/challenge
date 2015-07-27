@@ -40,3 +40,15 @@
   cursor: pointer;
   vertical-align: middle;
 }
+
+.challenge-comment-container {
+  margin-top: 25px;
+  padding-left: 0;
+}
+.challenge-comment-profile {
+  padding-left: 0;
+  border-right: 1px solid grey;
+}
+.challenge-comment-profile img {
+  height: 40px;
+}

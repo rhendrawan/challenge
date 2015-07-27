@@ -37,4 +37,16 @@
       </span>
     </div>
   </div>
+  <div class="challenge-comment-container col-xs-12">
+    <h3>Comments</h3>
+    <div class="challenge-comment-item" ng-repeat="comment in comments">
+      <div class="challenge-comment-profile col-xs-3">
+        <img ng-src="{{comment.user.profile_image}}">
+        {{user.first_name}} {{user.last_name}}
+      </div>
+      <div class="challenge-comment-text pull-right col-xs-9">
+        <p>{{comment.text}}</p>
+      </div>
+    </div>
+  </div>
 </div>
