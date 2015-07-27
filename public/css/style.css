@@ -86,9 +86,14 @@
 }
 .challenge-comment-text-container {
   padding-left: 2px;
+  padding-top: 9px;
 }
-.challenge-comment-text p {
+.challenge-comment-text {
+  vertical-align: middle;
+}
+.challenge-comment-date  {
   margin: 0;
+  vertical-align: middle;
 }
 .challenge-comment-profile {
   padding-left: 0;
