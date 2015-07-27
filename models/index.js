@@ -25,6 +25,10 @@ var User = orm.define('users', {
 
   fb_id: {
     type: Sequelize.STRING
+  },
+
+  profile_image: {
+    type: Sequelize.STRING
   }
 });
 

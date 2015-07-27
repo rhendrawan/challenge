@@ -101,6 +101,7 @@ router.get('/challenge/user', requires_login, function(req, res) {
   .then(function(user) {
     user.getChallenges()
       .then(function(challenges) {
+        // console.log(challenges);
         res.json(challenges);
       });
   });
@@ -121,10 +122,30 @@ router.get('/challenge/public', function(req, res) {
 
   // res.json(data);
 
-  models.Challenge.findAll({ limit: 10 , order: [['createdAt', 'DESC']]}) // must pass an array of tuples
+  models.Challenge.findAll({
+      limit: 10,
+      order: [['createdAt', 'DESC']], // must pass an array of tuples
+      include: [{
+        model: models.User,
+        as: 'participants'
+      }]
+    })
     .then(function(challenges) {
+
       var data = [];
       for(var i = 0; i < challenges.length; i++) {
+        var rawParticipants = challenges[i].get('participants', {plain: true});
+        var participants = [];
+
+        for(var j = 0; j < rawParticipants.length; j++) {
+          participants.push({
+            id: rawParticipants[i].id,
+            first_name: rawParticipants[i].first_name,
+            last_name: rawParticipants[i].last_name,
+            accepted: rawParticipants[i].usersChallenges.accepted
+          });
+        }
+
         data.push({
           id: challenges[i].get('id'),
           title: challenges[i].get('title'),
@@ -134,8 +155,10 @@ router.get('/challenge/public', function(req, res) {
           winner:  challenges[i].get('winner'),
           complete: challenges[i].get('complete'),
           started: challenges[i].get('started'),
-          createdAt: challenges[i].get('createdAt'),
-          updatedAt: challenges[i].get('updatedAt')
+          date_created: challenges[i].get('createdAt'),
+          date_completed: challenges[i].get('date_completed'),
+          date_started: challenges[i].get('date_started'),
+          participants: participants
         });
       }
 
@@ -154,8 +177,26 @@ router.get('/challenge/:id', function(req, res) {
   var target_id = parseInt(req.params.id);
   // var data = req.db.Challenge.findById(req.params.id);
 
-  models.Challenge.findOne({where: {id: target_id}})
+  models.Challenge.findOne({
+      where: {id: target_id},
+      include: [{
+        model: models.User,
+        as: 'participants'
+      }]
+    })
     .then(function(challenge) {
+      var rawParticipants = challenge.get('participants', {plain: true});
+      var participants = [];
+
+      for(var i = 0; i < rawParticipants.length; i++) {
+        participants.push({
+          id: rawParticipants[i].id,
+          first_name: rawParticipants[i].first_name,
+          last_name: rawParticipants[i].last_name,
+          accepted: rawParticipants[i].usersChallenges.accepted
+        });
+      }
+
       res.json({
         id: challenge.get('id'),
         title: challenge.get('title'),
@@ -165,8 +206,10 @@ router.get('/challenge/:id', function(req, res) {
         winner: challenge.get('winner'),
         complete: challenge.get('complete'),
         started: challenge.get('started'),
-        createdAt: challenge.get('createdAt'),
-        updatedAt: challenge.get('updatedAt')
+        date_created: challenge.get('createdAt'),
+        date_started: challenge.get('date_started'),
+        date_completed: challenge.get('date_completed'),
+        participants: participants
       });
     });
 
@@ -287,15 +330,34 @@ router.put('/challenge/:id/started', requires_login, function(req, res) {
       started: false,
       complete: false
     }
-  }).then(function() {
-    models.Challenge.findOne({where: {id: target_id}})
-    .then(function(challenge) {
-      if (challenge.get('started')) {
-        res.status(201).json({'success': true});
-      } else {
-        res.status(200).json({'success': false});
-      }
-    });
+  })
+  .then(function(challenges) {
+    if(challenges[0] > 0) {
+
+      console.log('START CHALLENGE: ', challenges);
+
+      models.Challenge.findOne({
+        where: {
+          id: target_id,
+          started: true
+        }
+      })
+      .then(function(/*challenge*/) { // May want to return info about newly started challenge
+          res.status(201).json({'success': true});
+      });
+    } else {
+
+      console.log('DID NOT START CHALLENGE', challenges);
+
+      res.status(400).json({'error': 'error at /challenge/:id/started',
+        'message': 'Could not update challenge to "started" or could not find challenge'});
+    }
+  })
+  .catch(function(error) {
+    if(error) {
+      res.status(400).json({'error': error,
+        'message': 'Could not update challenge to "started", sequelize update operation failed'});
+    }
   });
   // var query = {
   //   'where': {
