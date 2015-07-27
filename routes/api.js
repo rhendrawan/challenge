@@ -16,7 +16,6 @@ var requires_login = function(req, res, next) {
   next();
 };
 
-
 /**
  * Endpoint to get information about logged in user
  *
@@ -60,7 +59,8 @@ router.get('/allUsers', function(req, res) {
           last_name: users[i].get('last_name'),
           email: users[i].get('email'),
           fb_id: users[i].get('fb_id'),
-          createdAt: users[i].get('createdAt'),
+          date_created: users[i].get('createdAt'),
+          profile_image: users[i].get('profile_image'),
           updatedAt: users[i].get('updatedAt')
         });
       }
@@ -99,11 +99,47 @@ router.get('/challenge/user', requires_login, function(req, res) {
 
   models.User.findOne({where: {id: req.user.id}})
   .then(function(user) {
-    user.getChallenges()
-      .then(function(challenges) {
-        // console.log(challenges);
-        res.json(challenges);
-      });
+    user.getChallenges({
+        include: [{
+          model: models.User,
+          as: 'participants'
+        }]
+     })
+    .then(function(challenges) {
+      var data = [];  // Didn't want to use 'response' since that might be confused with http res
+
+      for(var i = 0; i < challenges.length; i++) {
+
+        var participants = [];
+
+        for(var j = 0; j < challenges[i].participants.length; j++) {
+          participants.push({
+            first_name: challenges[i].participants[j].get('first_name'),
+            id: challenges[i].participants[j].get('id'),
+            last_name: challenges[i].participants[j].get('last_name'),
+            profile_image: challenges[i].participants[j].get('profile_image'),
+            accepted: challenges[i].participants[j].usersChallenges.accepted
+          });
+        }
+
+        data.push({
+          complete: challenges[i].get('complete'),
+          creator: challenges[i].get('creator'),
+          date_completed: challenges[i].get('date_completed'),
+          date_created: challenges[i].get('createdAt'),
+          date_started: challenges[i].get('date_started'),
+          id: challenges[i].get('id'),
+          message: challenges[i].get('message'),
+          started: challenges[i].get('started'),
+          title: challenges[i].get('title'),
+          wager: challenges[i].get('wager'),
+          winner: challenges[i].get('winner'),
+          participants: participants
+        });
+      }
+
+      res.json(data);
+    });
   });
 
   // var data = require('../specs/server/mock_challenge_list.json');
@@ -142,6 +178,7 @@ router.get('/challenge/public', function(req, res) {
             id: rawParticipants[i].id,
             first_name: rawParticipants[i].first_name,
             last_name: rawParticipants[i].last_name,
+            profile_image: rawParticipants[i].profile_image,
             accepted: rawParticipants[i].usersChallenges.accepted
           });
         }
@@ -193,6 +230,7 @@ router.get('/challenge/:id', function(req, res) {
           id: rawParticipants[i].id,
           first_name: rawParticipants[i].first_name,
           last_name: rawParticipants[i].last_name,
+          profile_image: rawParticipants[i].profile_image,
           accepted: rawParticipants[i].usersChallenges.accepted
         });
       }
@@ -331,24 +369,18 @@ router.put('/challenge/:id/started', requires_login, function(req, res) {
       complete: false
     }
   })
-  .then(function(challenges) {
-    if(challenges[0] > 0) {
-
-      console.log('START CHALLENGE: ', challenges);
-
+  .then(function(numChallenges) { // Returns an array with element '0' being number of
+    if(numChallenges[0] > 0) {    // rows affected (should not be greater than 1 in our case)
       models.Challenge.findOne({
         where: {
           id: target_id,
           started: true
         }
       })
-      .then(function(/*challenge*/) { // May want to return info about newly started challenge
+      .then(function(/*challenge*/) { // May want to do something with newly started challenge
           res.status(201).json({'success': true});
       });
     } else {
-
-      console.log('DID NOT START CHALLENGE', challenges);
-
       res.status(400).json({'error': 'error at /challenge/:id/started',
         'message': 'Could not update challenge to "started" or could not find challenge'});
     }
@@ -356,7 +388,7 @@ router.put('/challenge/:id/started', requires_login, function(req, res) {
   .catch(function(error) {
     if(error) {
       res.status(400).json({'error': error,
-        'message': 'Could not update challenge to "started", sequelize update operation failed'});
+        'message': 'database update failed at /challenge/:id/started'});
     }
   });
   // var query = {
@@ -411,14 +443,26 @@ router.put('/challenge/:id/complete', requires_login, function(req, res) {
       started: true,
       complete: false
     }
-  }).then(function() {
-    models.Challenge.findOne({where: {id: target_id}})
-    .then(function(challenge) {
-      if (challenge.get('complete')) {
-        res.status(201).json({'success': true});
-      } else {
-        res.status(200).json({'success': false});
-      }
+  })
+  .then(function(numChallenges) {
+    if(numChallenges[0] > 0) {
+      models.Challenge.findOne({
+        where: {id: target_id},
+        complete: true,
+      })
+      .then(function(/*challenge*/) {  // May want to do something with newly created challenge
+          res.status(201).json({'success': true});
+      });
+    } else {
+      res.status(400).json({
+        'error': 'error at /challenge/:id/complete',
+        'message': 'could not update challenge to complete or could not find challenge'
+      });
+    }
+  })
+  .catch(function(error) {
+    res.status(400).json({'error': error,
+      'message': 'Database update failed at /challenge/:id/complete'
     });
   });
 

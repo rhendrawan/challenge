@@ -28,7 +28,8 @@ var User = orm.define('users', {
   },
 
   profile_image: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
+    defaultValue: '/img/placeholder.jpg'
   }
 });
 
