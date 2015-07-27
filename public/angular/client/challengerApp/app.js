@@ -61,6 +61,11 @@ angular.module('challengeApp', [
         //   }
         // }
     })
+    .state('challenge_list', {
+      url: '/challenges',
+      templateUrl: 'angular/client/challengerApp/challenge/list.html',
+      controller: 'ChallengeListController'
+    })
 
     .state('user', {
       url: '/user',
