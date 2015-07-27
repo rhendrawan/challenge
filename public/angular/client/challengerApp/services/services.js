@@ -49,14 +49,24 @@ angular.module('challengeApp.services', [])
       url: '/api/1/challenge/' + challengeId + '/accept',
     }).then(function(resp) {
       console.log("challenge completed", resp);
-    })
+    });
+  };
+
+  var getUserChallenges = function() {
+    return $http({
+      method: 'GET',
+      url: '/api/1/challenge/user'
+    }).then(function(resp) {
+      return resp.data;
+    });
   };
 
 
   return {
     getChallengeInfo: getChallengeInfo,
     acceptChallenge: acceptChallenge,
-    challengeCompleted: challengeCompleted
+    challengeCompleted: challengeCompleted,
+    getUserChallenges: getUserChallenges
   };
 })
 
