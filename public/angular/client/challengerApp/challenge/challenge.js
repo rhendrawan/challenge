@@ -13,6 +13,7 @@ angular.module('challengeApp.challenge', [])
   $scope.hasAccepted = false;
 
   $scope.comments = [];
+  $scope.newComment = '';
 
   $scope.getChallengeInfo = function(id) {
     ChallengeFactory.getChallengeInfo(id).then(function(res) {
@@ -41,6 +42,13 @@ angular.module('challengeApp.challenge', [])
     });
   };
   $scope.getChallengeComments($stateParams.id);
+
+  $scope.postChallengeComment = function() {
+    ChallengeFactory.postChallengeComment($stateParams.id, $scope.newComment).then(function() {
+      $scope.newComment = '';
+      $scope.getChallengeComments($stateParams.id);
+    });
+  };
 
   $scope.challengeAccept = function() {
     ChallengeFactory.acceptChallenge($scope.challengeData.id).then(function() {

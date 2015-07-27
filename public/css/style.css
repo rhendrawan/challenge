@@ -77,6 +77,19 @@
   margin-top: 25px;
   padding-left: 0;
 }
+.challenge-comment-list {
+  margin-bottom: 25px;
+  vertical-align: middle;
+}
+.challenge-comment-item {
+  min-height: 40px;
+}
+.challenge-comment-text-container {
+  padding-left: 2px;
+}
+.challenge-comment-text p {
+  margin: 0;
+}
 .challenge-comment-profile {
   padding-left: 0;
   border-right: 1px solid grey;
