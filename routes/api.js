@@ -16,7 +16,6 @@ var requires_login = function(req, res, next) {
   next();
 };
 
-
 /**
  * Endpoint to get information about logged in user
  *
@@ -99,10 +98,46 @@ router.get('/challenge/user', requires_login, function(req, res) {
 
   models.User.findOne({where: {id: req.user.id}})
   .then(function(user) {
-    user.getChallenges()
-      .then(function(challenges) {
-        res.json(challenges);
-      });
+    user.getChallenges({
+        include: [{
+          model: models.User,
+          as: 'participants'
+        }]
+     })
+    .then(function(challenges) {
+      var data = [];  // Didn't want to use 'response' since that might be confused with http res
+
+      for(var i = 0; i < challenges.length; i++) {
+
+        var participants = [];
+
+        for(var j = 0; j < challenges[i].participants.length; j++) {
+          participants.push({
+            first_name: challenges[i].participants[j].get('first_name'),
+            id: challenges[i].participants[j].get('id'),
+            last_name: challenges[i].participants[j].get('last_name'),
+            accepted: challenges[i].participants[j].usersChallenges.accepted
+          });
+        }
+
+        data.push({
+          complete: challenges[i].get('complete'),
+          creator: challenges[i].get('creator'),
+          date_completed: challenges[i].get('date_completed'),
+          date_created: challenges[i].get('createdAt'),
+          date_started: challenges[i].get('date_started'),
+          id: challenges[i].get('id'),
+          message: challenges[i].get('message'),
+          started: challenges[i].get('started'),
+          title: challenges[i].get('title'),
+          wager: challenges[i].get('wager'),
+          winner: challenges[i].get('winner'),
+          participants: participants
+        });
+      }
+
+      res.json(data);
+    });
   });
 
   // var data = require('../specs/server/mock_challenge_list.json');
