@@ -52,13 +52,13 @@
       </div>
     </div>
     <div class="challenge-comment-post" ng-hide="user===null">
-      <form>
+      <form name="commentForm">
         <div class="form-group">
           <label for="challenge-comment-text">Make a comment:</label>
           <textarea name="challenge-comment-text" id="challenge-comment-text" class="form-control challenge-comment-text" placeholder="Tell them what's what..."
-           ng-model="newComment"></textarea>
+           ng-model="newComment" ng-required="true" ng-minlength="3"></textarea>
         </div>
-        <button type="button" class="btn btn-success" ng-click="postChallengeComment()">Post comment</button>
+        <button type="button" class="btn btn-success" ng-click="postChallengeComment()" ng-disabled="commentForm.$invalid">Post comment</button>
       </form>
     </div>
   </div>
