@@ -101,7 +101,6 @@ router.get('/challenge/user', requires_login, function(req, res) {
   .then(function(user) {
     user.getChallenges()
       .then(function(challenges) {
-        // console.log(challenges);
         res.json(challenges);
       });
   });
@@ -331,24 +330,18 @@ router.put('/challenge/:id/started', requires_login, function(req, res) {
       complete: false
     }
   })
-  .then(function(challenges) {
-    if(challenges[0] > 0) {
-
-      console.log('START CHALLENGE: ', challenges);
-
+  .then(function(numChallenges) { // Returns an array with element '0' being number of
+    if(numChallenges[0] > 0) {    // rows affected (should not be greater than 1 in our case)
       models.Challenge.findOne({
         where: {
           id: target_id,
           started: true
         }
       })
-      .then(function(/*challenge*/) { // May want to return info about newly started challenge
+      .then(function(/*challenge*/) { // May want to do something with newly started challenge
           res.status(201).json({'success': true});
       });
     } else {
-
-      console.log('DID NOT START CHALLENGE', challenges);
-
       res.status(400).json({'error': 'error at /challenge/:id/started',
         'message': 'Could not update challenge to "started" or could not find challenge'});
     }
@@ -356,7 +349,7 @@ router.put('/challenge/:id/started', requires_login, function(req, res) {
   .catch(function(error) {
     if(error) {
       res.status(400).json({'error': error,
-        'message': 'Could not update challenge to "started", sequelize update operation failed'});
+        'message': 'database update failed at /challenge/:id/started'});
     }
   });
   // var query = {
@@ -411,14 +404,26 @@ router.put('/challenge/:id/complete', requires_login, function(req, res) {
       started: true,
       complete: false
     }
-  }).then(function() {
-    models.Challenge.findOne({where: {id: target_id}})
-    .then(function(challenge) {
-      if (challenge.get('complete')) {
-        res.status(201).json({'success': true});
-      } else {
-        res.status(200).json({'success': false});
-      }
+  })
+  .then(function(numChallenges) {
+    if(numChallenges[0] > 0) {
+      models.Challenge.findOne({
+        where: {id: target_id},
+        complete: true,
+      })
+      .then(function(/*challenge*/) {  // May want to do something with newly created challenge
+          res.status(201).json({'success': true});
+      });
+    } else {
+      res.status(400).json({
+        'error': 'error at /challenge/:id/complete',
+        'message': 'could not update challenge to complete or could not find challenge'
+      });
+    }
+  })
+  .catch(function(error) {
+    res.status(400).json({'error': error,
+      'message': 'Database update failed at /challenge/:id/complete'
     });
   });
 
