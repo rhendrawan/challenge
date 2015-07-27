@@ -10,23 +10,28 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha'],
+    frameworks: ['mocha', 'sinon'],
 
 
     // list of files / patterns to load in the browser
     files: [
       'bower_components/angular/angular.js',
-      'bower_components/angular-route/angular-route.js',
+      'bower_components/angular-ui-router/release/angular-ui-router.js',
       'bower_components/angular-mocks/angular-mocks.js',
 
       // our app code
-      'public/angular/client/app/**/*.js',
+      'public/angular/client/challengerApp/*.js',
+      'public/angular/client/challengerApp/**/*.js',
 
       // our spec files
       'node_modules/expect.js/index.js',
       'specs/client/*.js'
 
     ],
+
+    // plugins : [
+    //     'karma-mocha'
+    // ],
 
 
     // list of files to exclude
