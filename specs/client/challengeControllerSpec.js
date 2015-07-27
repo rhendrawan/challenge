@@ -38,7 +38,7 @@ describe('ChallengeController', function(){
       .expectPOST('/api/1/challenge', {
         'title':'testTitle', 
         'message':'testMessage',
-        'participants':[{'id':2}],
+        'participants':[2],
         'wager':'testWager'
       })
       .respond(200, {'id':2});
@@ -71,28 +71,16 @@ describe('ChallengeController', function(){
       .respond(200, {});
 
       $httpBackend
-      .when('GET', 'angular/client/challengerApp/challenge/public.html')
+      .when('GET', 'angular/client/challengerApp/challenge/challenge.html')
       .respond(200, {});
 
       $httpBackend
-      .expectPOST('/api/1/challenge', {
-        'title':'testTitle', 
-        'message':'testMessage',
-        'challengee': {'id':2},
-        'participants':[2],
-        'wager':'testWager'
-      })
+      .expectPOST('/api/1/challenge', {"participants":[]})
       .respond(200, {'id':2});
 
 
       var challengeID;
-      scope.postChallenge({
-        'title':'testTitle', 
-        'message':'testMessage',
-        'challengee': {'id':2},
-        'participants':[],
-        'wager':'testWager'
-      });
+      scope.postChallenge();
       $httpBackend.flush();
       // scope.$digest();
       expect(spy.calledOnce).to.equal(true);
