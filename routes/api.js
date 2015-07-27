@@ -427,7 +427,13 @@ router.put('/challenge/:id/started', requires_login, function(req, res) {
  */
 router.put('/challenge/:id/complete', requires_login, function(req, res) {
   var target_id = parseInt(req.params.id);
-  var winner = parseInt(req.body.winner);
+  var winner;
+  if(req.body.winner === undefined) {
+    winner = null;
+  } else {
+    winner = parseInt(req.body.winner);
+  }
+
   //for testing
   // var target_id = 2;
   // var winner = 1;
