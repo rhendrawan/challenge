@@ -402,7 +402,6 @@ router.get('/challenge/:id/comments', function(req, res) {
   };
 
   models.Comment.findAll(query).then(function(comments) {
-    console.log(comments);
     var data = [];
 
     comments.forEach(function(comment) {
