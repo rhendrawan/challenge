@@ -424,6 +424,11 @@ router.get('/challenge/:id/comments', function(req, res) {
 router.post('/challenge/:id/comments', requires_login, function(req, res) {
   var target_id = parseInt(req.params.id);
 
+  if (req.body.text === undefined || req.body.text.length < 3) {
+    res.status(400).json({'error': 'EINVALID', 'message': 'Submitted form is invalid.'});
+    return;
+  }
+
   models.Comment.create({
     'userId': req.user.id,
     'challengeId': target_id,
