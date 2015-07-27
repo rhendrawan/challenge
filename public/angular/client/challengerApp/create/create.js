@@ -1,7 +1,7 @@
 angular.module('challengeApp.createChallenge', [])
 
 .controller('CreateChallengeController', function ($scope, $state, CreateChallengeFactory) {
-  
+
   $scope.allUsers = [];
   $scope.challengeInfo = {};
   $scope.challengeInfo.participants = [];
@@ -23,7 +23,7 @@ angular.module('challengeApp.createChallenge', [])
   // method that takes the challengeInfo object as argument and calls the factory POST call
   $scope.postChallenge = function(){
     CreateChallengeFactory.postChallenge($scope.challengeInfo).then(function(res){
-      $state.go('challenge', {'challengeId': res.id});
+      $state.go('challenge_view', {'id': res.id});
     });
   };
 
