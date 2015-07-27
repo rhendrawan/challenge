@@ -389,6 +389,51 @@ router.put('/challenge/:id/accept', requires_login, function(req, res) {
 });
 
 
+router.get('/challenge/:id/comments', function(req, res) {
+  var target_id = parseInt(req.params.id);
+
+  var query = {
+    'where': {
+      'challengeId': target_id
+    },
+    'include': [{
+      'model': models.User
+    }]
+  };
+
+  models.Comment.findAll(query).then(function(comments) {
+    console.log(comments);
+    var data = [];
+
+    comments.forEach(function(comment) {
+      data.push({
+        'text': comment.text,
+        'date_created': comment.createdAt,
+        'user': {
+          'id': comment.user.id,
+          'first_name': comment.user.first_name,
+          'last_name': comment.user.last_name,
+          'profile_image': comment.user.profile_image
+        }
+      });
+    });
+
+    res.json(data);
+  });
+});
+
+router.post('/challenge/:id/comments', requires_login, function(req, res) {
+  var target_id = parseInt(req.params.id);
+
+  models.Comment.create({
+    'userId': req.user.id,
+    'challengeId': target_id,
+    'text': req.body.text
+  }).then(function() {
+    res.json({'success': true});
+  });
+});
+
 module.exports = {
   'router': router,
   'challenge_form_is_valid': challenge_form_is_valid
