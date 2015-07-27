@@ -59,7 +59,8 @@ router.get('/allUsers', function(req, res) {
           last_name: users[i].get('last_name'),
           email: users[i].get('email'),
           fb_id: users[i].get('fb_id'),
-          createdAt: users[i].get('createdAt'),
+          date_created: users[i].get('createdAt'),
+          profile_image: users[i].get('profile_image'),
           updatedAt: users[i].get('updatedAt')
         });
       }
@@ -116,6 +117,7 @@ router.get('/challenge/user', requires_login, function(req, res) {
             first_name: challenges[i].participants[j].get('first_name'),
             id: challenges[i].participants[j].get('id'),
             last_name: challenges[i].participants[j].get('last_name'),
+            profile_image: challenges[i].participants[j].get('profile_image'),
             accepted: challenges[i].participants[j].usersChallenges.accepted
           });
         }
@@ -176,6 +178,7 @@ router.get('/challenge/public', function(req, res) {
             id: rawParticipants[i].id,
             first_name: rawParticipants[i].first_name,
             last_name: rawParticipants[i].last_name,
+            profile_image: rawParticipants[i].profile_image,
             accepted: rawParticipants[i].usersChallenges.accepted
           });
         }
@@ -227,6 +230,7 @@ router.get('/challenge/:id', function(req, res) {
           id: rawParticipants[i].id,
           first_name: rawParticipants[i].first_name,
           last_name: rawParticipants[i].last_name,
+          profile_image: rawParticipants[i].profile_image,
           accepted: rawParticipants[i].usersChallenges.accepted
         });
       }
