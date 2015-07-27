@@ -100,6 +100,15 @@ Challenge.belongsToMany(User, {
   as: 'participants'
 });
 
+var Comment = orm.define('comments', {
+  text: {
+    type: Sequelize.STRING(512)
+  }
+});
+
+Comment.belongsTo(Challenge);
+Comment.belongsTo(User);
+
 
 // make the database
 // delete database file to clear database
@@ -108,4 +117,5 @@ orm.sync();
 exports.User = User;
 exports.Challenge = Challenge;
 exports.UserChallenge = UserChallenge;
+exports.Comment = Comment;
 exports.orm = orm;

@@ -80,6 +80,14 @@ angular.module('challengeApp.services', [])
     });
   };
 
+  var getChallengeComments = function(challengeId) {
+    return $http({
+      method: 'GET',
+      url: '/api/1/challenge/' + challengeId + '/comments'
+    }).then(function(resp) {
+      return resp.data;
+    });
+  };
 
   return {
     getChallengeInfo: getChallengeInfo,
@@ -87,7 +95,8 @@ angular.module('challengeApp.services', [])
     challengeStart: challengeStart,
     challengeComplete: challengeComplete,
     getUserChallenges: getUserChallenges,
-    getChallengeList: getChallengeList
+    getChallengeList: getChallengeList,
+    getChallengeComments: getChallengeComments
   };
 })
 

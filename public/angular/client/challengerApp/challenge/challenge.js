@@ -12,8 +12,10 @@ angular.module('challengeApp.challenge', [])
   $scope.isParticipant = false;
   $scope.hasAccepted = false;
 
-  $scope.getChallengeInfo = function(id){
-    ChallengeFactory.getChallengeInfo(id).then(function(res){
+  $scope.comments = [];
+
+  $scope.getChallengeInfo = function(id) {
+    ChallengeFactory.getChallengeInfo(id).then(function(res) {
       $scope.challengeData = res;
 
       $scope.creator = res.participants.filter(function(participant) { return participant.id === res.creator; })[0];
@@ -32,6 +34,13 @@ angular.module('challengeApp.challenge', [])
     });
   };
   $scope.getChallengeInfo($stateParams.id);
+
+  $scope.getChallengeComments = function(id) {
+    ChallengeFactory.getChallengeComments(id).then(function(res) {
+      $scope.comments = res;
+    });
+  };
+  $scope.getChallengeComments($stateParams.id);
 
   $scope.challengeAccept = function() {
     ChallengeFactory.acceptChallenge($scope.challengeData.id).then(function() {
