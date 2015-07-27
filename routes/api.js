@@ -101,6 +101,7 @@ router.get('/challenge/user', requires_login, function(req, res) {
   .then(function(user) {
     user.getChallenges()
       .then(function(challenges) {
+        // console.log(challenges);
         res.json(challenges);
       });
   });
@@ -130,7 +131,6 @@ router.get('/challenge/public', function(req, res) {
       }]
     })
     .then(function(challenges) {
-      console.log(challenges);
 
       var data = [];
       for(var i = 0; i < challenges.length; i++) {
@@ -330,15 +330,34 @@ router.put('/challenge/:id/started', requires_login, function(req, res) {
       started: false,
       complete: false
     }
-  }).then(function() {
-    models.Challenge.findOne({where: {id: target_id}})
-    .then(function(challenge) {
-      if (challenge.get('started')) {
-        res.status(201).json({'success': true});
-      } else {
-        res.status(200).json({'success': false});
-      }
-    });
+  })
+  .then(function(challenges) {
+    if(challenges[0] > 0) {
+
+      console.log('START CHALLENGE: ', challenges);
+
+      models.Challenge.findOne({
+        where: {
+          id: target_id,
+          started: true
+        }
+      })
+      .then(function(/*challenge*/) { // May want to return info about newly started challenge
+          res.status(201).json({'success': true});
+      });
+    } else {
+
+      console.log('DID NOT START CHALLENGE', challenges);
+
+      res.status(400).json({'error': 'error at /challenge/:id/started',
+        'message': 'Could not update challenge to "started" or could not find challenge'});
+    }
+  })
+  .catch(function(error) {
+    if(error) {
+      res.status(400).json({'error': error,
+        'message': 'Could not update challenge to "started", sequelize update operation failed'});
+    }
   });
   // var query = {
   //   'where': {
